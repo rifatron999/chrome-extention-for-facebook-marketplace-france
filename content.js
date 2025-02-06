@@ -1,30 +1,41 @@
 chrome.storage.local.get("productData", function (result) {
     if (!result || !result.productData) {
-        console.error("Error: No product data found in storage.");
+        console.error("❌ Error: No product data found in storage.");
         return;
     }
 
     let product = result.productData;
+    console.log("✅ Product Data Retrieved:", product);
 
-    // Ensure required fields exist before accessing them
-    if (!product.title || !product.price || !product.description) {
-        console.error("Error: Missing product fields", product);
-        return;
+    function waitForElement(selector, callback, interval = 500, maxAttempts = 20) {
+        let attempts = 0;
+        const check = setInterval(() => {
+            let element = document.querySelector(selector);
+            if (element) {
+                clearInterval(check);
+                callback(element);
+            } else {
+                console.log(`🔄 Waiting for form fields... (${++attempts}/${maxAttempts})`);
+                if (attempts >= maxAttempts) {
+                    clearInterval(check);
+                    console.error("❌ Error: Form fields not found.");
+                }
+            }
+        }, interval);
     }
 
-    // Wait for the page to fully load before filling fields
-    setTimeout(() => {
-        let titleField = document.querySelector('input[aria-label="Title"]');
-        let priceField = document.querySelector('input[aria-label="Price"]');
-        let descField = document.querySelector('textarea[aria-label="Description"]');
+    waitForElement('input[aria-label="Title"]', (titleField) => {
+        titleField.value = product.title;
+        console.log("✅ Title filled successfully!");
+    });
 
-        if (titleField && priceField && descField) {
-            titleField.value = product.title;
-            priceField.value = product.price;
-            descField.value = product.description;
-            console.log("✅ Product details filled successfully!");
-        } else {
-            console.error("❌ Error: Could not find form fields.");
-        }
-    }, 2000); // Delay to allow elements to load
+    waitForElement('input[aria-label="Price"]', (priceField) => {
+        priceField.value = product.price;
+        console.log("✅ Price filled successfully!");
+    });
+
+    waitForElement('textarea[aria-label="Description"]', (descField) => {
+        descField.value = product.description;
+        console.log("✅ Description filled successfully!");
+    });
 });
