@@ -2,29 +2,54 @@
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Allow-Headers: Content-Type");
+header('Content-Type: application/json'); // Ensure response is JSON format
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $title = $_POST['title'];
-    $price = $_POST['price'];
-    $description = $_POST['description'];
+    $title = $_POST['title'] ?? '';
+    $price = $_POST['price'] ?? '';
+    $description = $_POST['description'] ?? '';
+    $category = $_POST['category'] ?? '';
+    $condition = $_POST['condition'] ?? '';
+    $status = $_POST['status'] ?? '';
 
-    if (isset($_FILES['image'])) {
-        $imageName = time() . "_" . $_FILES['image']['name'];
-        move_uploaded_file($_FILES['image']['tmp_name'], "uploads/" . $imageName);
-        $imagePath = "uploads/" . $imageName;
-    } else {
-        $imagePath = null;
+    if (empty($title) || empty($price) || empty($description)) {
+        echo json_encode(["message" => "Missing required fields"]);
+        exit;
     }
 
-    // Connect to Database
+    // Handle multiple image uploads
+    $imagePaths = [];
+    if (!empty($_FILES['images']['name'][0])) {
+        $uploadDir = "uploads/";
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
+        }
+
+        foreach ($_FILES['images']['tmp_name'] as $key => $tmpName) {
+            $imageName = time() . "_" . $_FILES['images']['name'][$key];
+            $filePath = $uploadDir . $imageName;
+            if (move_uploaded_file($tmpName, $filePath)) {
+                $imagePaths[] = $filePath;
+            }
+        }
+    }
+
+    // Convert images to JSON format
+    $imageJson = !empty($imagePaths) ? json_encode($imagePaths) : null;
+
+    // Database Connection
     $conn = new mysqli("localhost", "root", "", "chrome_extension");
-    
     if ($conn->connect_error) {
-        die(json_encode(["message" => "Database connection failed"]));
+        echo json_encode(["message" => "Database connection failed"]);
+        exit;
     }
 
-    $stmt = $conn->prepare("INSERT INTO products (title, price, description, image) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("siss", $title, $price, $description, $imagePath);
+    // Insert Data
+    $stmt = $conn->prepare("INSERT INTO products (title, price, description, category, `condition`, status, images) VALUES (?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssssss", $title, $price, $description, $category, $condition, $status, $imageJson);
 
     if ($stmt->execute()) {
         echo json_encode(["message" => "Product uploaded successfully"]);

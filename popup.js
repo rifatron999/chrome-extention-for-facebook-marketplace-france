@@ -1,3 +1,24 @@
+document.addEventListener("DOMContentLoaded", function() {
+    const tabs = document.querySelectorAll(".tab");
+    const tabContents = document.querySelectorAll(".tab-content");
+
+    tabs.forEach(tab => {
+        tab.addEventListener("click", function() {
+            // Remove active class from all tabs
+            tabs.forEach(t => t.classList.remove("tab-active"));
+            this.classList.add("tab-active");
+
+            // Hide all tab contents
+            tabContents.forEach(content => content.classList.remove("tab-active"));
+
+            // Show the active tab content
+            const tabId = this.getAttribute("data-tab");
+            document.getElementById(tabId).classList.add("tab-active");
+        });
+    });
+});
+
+// fetch
 document.getElementById("fetchProduct").addEventListener("click", function () {
     fetch("http://localhost/others/chrome-extention-for-facebook-marketplace-france/server.php")
         .then(response => {
@@ -36,7 +57,14 @@ document.getElementById("productForm").addEventListener("submit", async function
     formData.append("title", document.getElementById("title").value);
     formData.append("price", document.getElementById("price").value);
     formData.append("description", document.getElementById("description").value);
-    formData.append("image", document.getElementById("image").files[0]);
+    formData.append("category", document.getElementById("category").value);
+    formData.append("condition", document.getElementById("condition").value);
+    formData.append("status", document.getElementById("status").value);
+
+    let imageFiles = document.getElementById("images").files;
+    for (let i = 0; i < imageFiles.length; i++) {
+        formData.append("images[]", imageFiles[i]);
+    }
 
     try {
         let response = await fetch("http://localhost/others/chrome-extention-for-facebook-marketplace-france/upload.php", {
@@ -44,11 +72,16 @@ document.getElementById("productForm").addEventListener("submit", async function
             body: formData
         });
 
-        let result = await response.json();
+        let text = await response.text(); // Get raw response
+        console.log("Server Response:", text); // Debug response
+
+        let result = JSON.parse(text); // Parse JSON after checking
         alert(result.message);
     } catch (error) {
         console.error("Error:", error);
         alert("Failed to upload product.");
     }
 });
+
+
 //upload end 
