@@ -128,6 +128,24 @@ chrome.storage.local.get("productData", function (result) {
             });
         //price end 
 
+        //category
+            waitForElement('label[aria-label="Category"]', (dropdown) => {
+                dropdown.click(); // Click to open the dropdown
+            
+                setTimeout(() => {
+                    let newOption = [...document.querySelectorAll('span')]
+                        .find(span => span.textContent.trim() === "Mobile phones");
+            
+                    if (newOption) {
+                        newOption.click();
+                        console.log("✅ Category set");
+                    } else {
+                        console.error("❌ 'Category' option not found");
+                    }
+                }, 1000); // Delay to allow dropdown options to load
+            });
+        //category end
+
         //condition
             waitForElement('label[aria-label="Condition"]', (dropdown) => {
                 dropdown.click(); // Click to open the dropdown
@@ -138,45 +156,45 @@ chrome.storage.local.get("productData", function (result) {
             
                     if (newOption) {
                         newOption.click();
-                        console.log("✅ Condition set to 'New'");
+                        console.log("✅ Condition set");
                     } else {
-                        console.error("❌ 'New' option not found");
+                        console.error("❌ 'Condition' option not found");
                     }
                 }, 1000); // Delay to allow dropdown options to load
             });
         //condition end
         
         //description
-            // waitForElement('label[aria-label="Description"]', (labelElement) => {
-            //     // Extract the value of the 'for' attribute
-            //     const inputId = labelElement.getAttribute('for');
+            waitForElement('label[aria-label="Description"]', (labelElement) => {
+                // Extract the value of the 'for' attribute
+                const inputId = labelElement.getAttribute('for');
                 
-            //     // Escape the colon in the inputId to make it a valid selector
-            //     const escapedInputId = inputId.replace(/:/g, '\\:');
+                // Escape the colon in the inputId to make it a valid selector
+                const escapedInputId = inputId.replace(/:/g, '\\:');
                 
-            //     // Find the input field using the escaped ID
-            //     const inputField = document.querySelector(`#${escapedInputId}`);
+                // Find the input field using the escaped ID
+                const inputField = document.querySelector(`#${escapedInputId}`);
                 
-            //     if (inputField) {
-            //         inputField.focus();  // Focus on the input field
+                if (inputField) {
+                    inputField.focus();  // Focus on the input field
                     
-            //         // Use setTimeout to ensure value is set after focus
-            //         setTimeout(() => {
-            //             inputField.value = product.description;  // Set the value of the input field
+                    // Use setTimeout to ensure value is set after focus
+                    setTimeout(() => {
+                        inputField.value = product.description;  // Set the value of the input field
                         
-            //             // Trigger input event to notify the browser that the value has changed
-            //             const event = new Event('input', {
-            //                 bubbles: true,
-            //                 cancelable: true,
-            //             });
-            //             inputField.dispatchEvent(event);
+                        // Trigger input event to notify the browser that the value has changed
+                        const event = new Event('input', {
+                            bubbles: true,
+                            cancelable: true,
+                        });
+                        inputField.dispatchEvent(event);
                         
-            //             console.log("✅ Description focused and filled successfully!");
-            //         }, 100);  // Wait for 100ms to ensure focus happens before setting value
-            //     } else {
-            //         console.log("❌ Input field not found");
-            //     }
-            // });
+                        console.log("✅ Description focused and filled successfully!");
+                    }, 100);  // Wait for 100ms to ensure focus happens before setting value
+                } else {
+                    console.log("❌ Input field not found");
+                }
+            });
         //description end
         
          
