@@ -25,6 +25,44 @@ chrome.storage.local.get("productData", function (result) {
                 }
             }, interval);
         }
+        //images
+        
+            // 📌 Drag & Drop Images into Facebook Upload Box
+            function dropImages(imageUrls) {
+                waitForElement('input[type="file"][accept*="image"]', async (fileInput) => {
+                    console.log("✅ Found Image Upload Input!");
+
+                    // Creating a DataTransfer object for drag-and-drop
+                    let dataTransfer = new DataTransfer();
+
+                    // Loop through image URLs and convert them to File objects
+                    for (let imageUrl of imageUrls) {
+                        let response = await fetch(imageUrl);
+                        let blob = await response.blob();
+                        let file = new File([blob], "product-image.jpg", { type: blob.type });
+
+                        dataTransfer.items.add(file);
+                    }
+
+                    // Assign images to the file input
+                    fileInput.files = dataTransfer.files;
+
+                    // Dispatch change event to trigger upload
+                    fileInput.dispatchEvent(new Event("change", { bubbles: true }));
+
+                    console.log("✅ Images dropped successfully!");
+                });
+            }
+
+            // 📌 Call the function with images from storage
+            if (product.images && product.images.length > 0) {
+                dropImages(product.images);
+            } else {
+                console.log("❌ No images found in product data.");
+            }
+        
+        //images end
+
         //title
             waitForElement('label[aria-label="Title"]', (labelElement) => {
                 // Extract the value of the 'for' attribute
@@ -89,6 +127,24 @@ chrome.storage.local.get("productData", function (result) {
                 }
             });
         //price end 
+
+        //condition
+            waitForElement('label[aria-label="Condition"]', (dropdown) => {
+                dropdown.click(); // Click to open the dropdown
+            
+                setTimeout(() => {
+                    let newOption = [...document.querySelectorAll('span')]
+                        .find(span => span.textContent.trim() === "New");
+            
+                    if (newOption) {
+                        newOption.click();
+                        console.log("✅ Condition set to 'New'");
+                    } else {
+                        console.error("❌ 'New' option not found");
+                    }
+                }, 1000); // Delay to allow dropdown options to load
+            });
+        //condition end
         
         //description
             // waitForElement('label[aria-label="Description"]', (labelElement) => {
@@ -123,44 +179,7 @@ chrome.storage.local.get("productData", function (result) {
             // });
         //description end
         
-        //images
-        
-         // 📌 Drag & Drop Images into Facebook Upload Box
-        function dropImages(imageUrls) {
-            waitForElement('input[type="file"][accept*="image"]', async (fileInput) => {
-                console.log("✅ Found Image Upload Input!");
-
-                // Creating a DataTransfer object for drag-and-drop
-                let dataTransfer = new DataTransfer();
-
-                // Loop through image URLs and convert them to File objects
-                for (let imageUrl of imageUrls) {
-                    let response = await fetch(imageUrl);
-                    let blob = await response.blob();
-                    let file = new File([blob], "product-image.jpg", { type: blob.type });
-
-                    dataTransfer.items.add(file);
-                }
-
-                // Assign images to the file input
-                fileInput.files = dataTransfer.files;
-
-                // Dispatch change event to trigger upload
-                fileInput.dispatchEvent(new Event("change", { bubbles: true }));
-
-                console.log("✅ Images dropped successfully!");
-            });
-        }
-
-        // 📌 Call the function with images from storage
-        if (product.images && product.images.length > 0) {
-            dropImages(product.images);
-        } else {
-            console.log("❌ No images found in product data.");
-        }
-        
-        
-        //images end 
+         
         
         
 
