@@ -24,19 +24,19 @@ chrome.storage.local.get("productData", function (result) {
         }, interval);
     }
 
-    waitForElement('input[id=":r1a:"]', (titleField) => {
-        titleField.value = product.title;
-        console.log("✅ Title filled successfully!");
+    waitForElement('label[aria-label="Title"]', (labelElement) => {
+        // Extract the value of the 'for' attribute
+        const inputId = labelElement.getAttribute('for');
+        
+        // Find the input field using the extracted ID
+        const inputField = document.querySelector(`#${inputId}`);
+        
+        if (inputField) {
+            inputField.click();  // Click on the input field
+            inputField.value = product.title;  // Set the value of the input field
+            console.log("✅ Title filled successfully!");
+        } else {
+            console.log("❌ Input field not found");
+        }
     });
-
-    waitForElement('input[id=":r1d:"]', (priceField) => {
-        priceField.value = product.price;
-        console.log("✅ Price filled successfully!");
-    });
-    
-
-    // waitForElement('textarea[aria-label="Description"]', (descField) => {
-    //     descField.value = product.description;
-    //     console.log("✅ Description filled successfully!");
-    // });
 });
