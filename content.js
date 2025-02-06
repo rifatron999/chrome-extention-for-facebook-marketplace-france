@@ -24,18 +24,19 @@ chrome.storage.local.get("productData", function (result) {
         }, interval);
     }
 
-    waitForElement('input[aria-label="Title"]', (titleField) => {
+    waitForElement('input[id=":r1a:"]', (titleField) => {
         titleField.value = product.title;
         console.log("✅ Title filled successfully!");
     });
 
-    waitForElement('input[aria-label="Price"]', (priceField) => {
+    waitForElement('input[id=":r1d:"]', (priceField) => {
         priceField.value = product.price;
         console.log("✅ Price filled successfully!");
     });
+    
 
-    waitForElement('textarea[aria-label="Description"]', (descField) => {
-        descField.value = product.description;
-        console.log("✅ Description filled successfully!");
-    });
+    // waitForElement('textarea[aria-label="Description"]', (descField) => {
+    //     descField.value = product.description;
+    //     console.log("✅ Description filled successfully!");
+    // });
 });
