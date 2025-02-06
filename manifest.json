@@ -1,0 +1,32 @@
+{
+    "manifest_version": 3,
+    "name": "Facebook Marketplace Auto-Filler",
+    "version": "1.0",
+    "description": "Fetches product details from a backend and auto-fills Facebook Marketplace listing.",
+    "permissions": [
+      "storage",
+      "activeTab",
+      "scripting"
+    ],
+    "host_permissions": [
+      "https://yourserver.com/*"
+    ],
+    "background": {
+      "service_worker": "background.js"
+    },
+    "action": {
+      "default_popup": "popup.html",
+      "default_icon": {
+        "16": "icon.png",
+        "48": "icon.png",
+        "128": "icon.png"
+      }
+    },
+    "content_scripts": [
+      {
+        "matches": ["https://www.facebook.com/marketplace/create*"],
+        "js": ["content.js"]
+      }
+    ]
+  }
+  
