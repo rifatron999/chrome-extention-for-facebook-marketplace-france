@@ -11,7 +11,10 @@ if ($conn->connect_error) {
     exit;
 }
 
-$sql = "SELECT id, title, price, category, `condition`, status, images FROM products ORDER BY id DESC";
+$sql = "SELECT id, title, price, category, `condition`, status, images 
+        FROM products 
+        WHERE is_published = 0 
+        ORDER BY id DESC";
 $result = $conn->query($sql);
 
 $products = [];
