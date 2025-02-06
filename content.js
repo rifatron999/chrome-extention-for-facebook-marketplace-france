@@ -1,21 +1,30 @@
 chrome.storage.local.get("productData", function (result) {
-    if (!result.productData) {
+    if (!result || !result.productData) {
         console.error("Error: No product data found in storage.");
         return;
     }
 
     let product = result.productData;
 
-    // Ensure all fields exist before accessing them
+    // Ensure required fields exist before accessing them
     if (!product.title || !product.price || !product.description) {
         console.error("Error: Missing product fields", product);
         return;
     }
 
-    // Fill the form fields
-    document.querySelector('input[aria-label="Title"]').value = product.title;
-    document.querySelector('input[aria-label="Price"]').value = product.price;
-    document.querySelector('textarea[aria-label="Description"]').value = product.description;
+    // Wait for the page to fully load before filling fields
+    setTimeout(() => {
+        let titleField = document.querySelector('input[aria-label="Title"]');
+        let priceField = document.querySelector('input[aria-label="Price"]');
+        let descField = document.querySelector('textarea[aria-label="Description"]');
 
-    console.log("Product details filled successfully!");
+        if (titleField && priceField && descField) {
+            titleField.value = product.title;
+            priceField.value = product.price;
+            descField.value = product.description;
+            console.log("✅ Product details filled successfully!");
+        } else {
+            console.error("❌ Error: Could not find form fields.");
+        }
+    }, 2000); // Delay to allow elements to load
 });

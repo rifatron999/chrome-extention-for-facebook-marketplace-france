@@ -4,21 +4,25 @@ document.getElementById("fetchProduct").addEventListener("click", function () {
             if (!response.ok) {
                 throw new Error("Network response was not ok: " + response.statusText);
             }
-            return response.json(); // ✅ Read JSON only once
+            return response.json();
         })
         .then(data => {
-            console.log("Fetched Data:", data); // ✅ Log after parsing JSON
-            
+            console.log("Fetched Data:", data);
+
+            // Open the Facebook Marketplace page
             chrome.tabs.create({ url: "https://www.facebook.com/marketplace/create/item" }, function (tab) {
-                chrome.scripting.executeScript({
-                    target: { tabId: tab.id },
-                    files: ["content.js"]
-                }).then(() => {
-                    chrome.storage.local.set({ productData: data }, function() {
-                        console.log("Product data saved in storage.");
+                
+                // Store the product data first
+                chrome.storage.local.set({ productData: data }, function () {
+                    console.log("Product data saved in storage.");
+
+                    // Inject content script only after data is stored
+                    chrome.scripting.executeScript({
+                        target: { tabId: tab.id },
+                        files: ["content.js"]
+                    }).catch(err => {
+                        console.error("Error injecting content script:", err);
                     });
-                }).catch(err => {
-                    console.error("Error injecting content script:", err);
                 });
             });
         })
