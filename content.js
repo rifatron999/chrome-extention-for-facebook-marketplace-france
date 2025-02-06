@@ -1,16 +1,21 @@
 chrome.storage.local.get("productData", function (result) {
+    if (!result.productData) {
+        console.error("Error: No product data found in storage.");
+        return;
+    }
+
     let product = result.productData;
 
+    // Ensure all fields exist before accessing them
+    if (!product.title || !product.price || !product.description) {
+        console.error("Error: Missing product fields", product);
+        return;
+    }
+
+    // Fill the form fields
     document.querySelector('input[aria-label="Title"]').value = product.title;
     document.querySelector('input[aria-label="Price"]').value = product.price;
     document.querySelector('textarea[aria-label="Description"]').value = product.description;
-    
-    // Upload image (simulated - manual intervention may be needed)
-    let imageInput = document.querySelector('input[type="file"]');
-    let file = new File([""], product.images[0], { type: "image/jpeg" });
-    let dataTransfer = new DataTransfer();
-    dataTransfer.items.add(file);
-    imageInput.files = dataTransfer.files;
 
-    console.log("Product details filled!");
+    console.log("Product details filled successfully!");
 });

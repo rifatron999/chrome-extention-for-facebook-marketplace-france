@@ -4,12 +4,12 @@ document.getElementById("fetchProduct").addEventListener("click", function () {
             if (!response.ok) {
                 throw new Error("Network response was not ok: " + response.statusText);
             }
-            return response.json();
+            return response.json(); // ✅ Read JSON only once
         })
         .then(data => {
-            console.log("Fetched Data:", data);
+            console.log("Fetched Data:", data); // ✅ Log after parsing JSON
             
-            chrome.tabs.create({ url: "https://www.facebook.com/marketplace/create" }, function (tab) {
+            chrome.tabs.create({ url: "https://www.facebook.com/marketplace/create/item" }, function (tab) {
                 chrome.scripting.executeScript({
                     target: { tabId: tab.id },
                     files: ["content.js"]

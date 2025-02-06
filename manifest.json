@@ -1,32 +1,27 @@
 {
     "manifest_version": 3,
-    "name": "Facebook Marketplace Auto-Filler",
+    "name": "Facebook Marketplace Product Uploader",
     "version": "1.0",
-    "description": "Fetches product details from a backend and auto-fills Facebook Marketplace listing.",
+    "description": "Automatically fills product details on Facebook Marketplace.",
     "permissions": [
-      "storage",
-      "activeTab",
-      "scripting"
+        "storage",
+        "activeTab",
+        "scripting"
     ],
     "host_permissions": [
-      "https://yourserver.com/*"
+        "https://www.facebook.com/marketplace/*"
     ],
     "background": {
-      "service_worker": "background.js"
+        "service_worker": "background.js"
     },
     "action": {
-      "default_popup": "popup.html",
-      "default_icon": {
-        "16": "icon.png",
-        "48": "icon.png",
-        "128": "icon.png"
-      }
+        "default_popup": "popup.html",
+        "default_icon": "icon.png"
     },
     "content_scripts": [
-      {
-        "matches": ["https://www.facebook.com/marketplace/create*"],
-        "js": ["content.js"]
-      }
+        {
+            "matches": ["https://www.facebook.com/marketplace/*"],
+            "js": ["content.js"]
+        }
     ]
-  }
-  
+}
