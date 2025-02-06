@@ -75,9 +75,30 @@
 
     <div class="tab-content" id="fetchProductTab">
         <div class="container">
-            <button id="fetchProduct">Fetch Product & Open FB</button>
+            <button id="fetchProduct" class="btn">Fetch Product</button>
+            <button id="listProduct" class="btn">List Products</button>
+    
+            <div class="table-container">
+                <table id="productTable">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Price</th>
+                            <th>Category</th>
+                            <th>Condition</th>
+                            <th>Status</th>
+                            <th>Image</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Product rows will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
+    
+    
 
     <script src="popup.js"></script>
 </body>

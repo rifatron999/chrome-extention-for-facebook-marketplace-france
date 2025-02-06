@@ -19,7 +19,38 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 // fetch
-document.getElementById("fetchProduct").addEventListener("click", function () {
+document.getElementById("fetchProduct").addEventListener("click", async function () {
+    try {
+        let response = await fetch("http://localhost/others/chrome-extention-for-facebook-marketplace-france/fetchProducts.php");
+        let products = await response.json();
+
+        let tableBody = document.querySelector("#productTable tbody");
+        tableBody.innerHTML = ""; // Clear previous data
+
+        products.forEach(product => {
+            let row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${product.title}</td>
+                <td>${product.price} €</td>
+                <td>${product.category}</td>
+                <td>${product.condition}</td>
+                <td>${product.status}</td>
+                <td>
+                    ${product.images && product.images.length > 0 ? 
+                        `<img src="http://localhost/others/chrome-extention-for-facebook-marketplace-france/${product.images[0]}" width="50">` : 
+                        "No Image"}
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+
+    } catch (error) {
+        console.error("Error fetching products:", error);
+    }
+});
+
+//list product 
+document.getElementById("listProduct").addEventListener("click", function () {
     fetch("http://localhost/others/chrome-extention-for-facebook-marketplace-france/server.php")
         .then(response => {
             if (!response.ok) {
