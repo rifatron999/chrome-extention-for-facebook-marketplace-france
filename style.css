@@ -1,0 +1,128 @@
+:root {
+    --color-background: white;
+    --color-background-dark: #121212;
+    --color-primary: #4608ad;
+    --color-primary-lighten: #f4f1fa;
+    --color-secondary: #fafafa;
+    --color-secondary-dark: #1e1e1e;
+    --color-border: #ebebeb;
+    --color-text: #4a4a4a;
+    --color-text-lighten: #7a7a7a;
+    --color-text-dark: var(--color-background);
+    --color-text-dark-lighten: #979797;
+    --color-anchor-dark: var(--color-text-dark);
+    --color-success: #50b154;
+    --color-error: #ff5252;
+}
+
+* {
+    box-sizing: border-box;
+    scrollbar-width: none;
+}
+
+body {
+    background: var(--color-primary);
+    color: var(--color-text);
+    direction: ltr;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: .9rem;
+    line-height: 1.5rem;
+    margin: 0;
+    overflow: hidden;
+}
+
+h3 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    background: var(--color-background);
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    min-width: 24rem; /* Minimum width of the popup */
+    max-width: 34rem; /* Maximum width of the popup */
+    height: auto;
+    overflow-y: auto; /* Allows scroll if content overflows */
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    font-weight: bold;
+    font-size: 1rem;
+    margin-bottom: 8px;
+    color: #444;
+}
+
+input, select, textarea {
+    width: 100%;
+    margin-bottom: 15px;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: #f8f8f8;
+    transition: border 0.3s;
+}
+
+input:focus, select:focus, textarea:focus {
+    border: 1px solid #1877F2;
+    outline: none;
+    background: #fff;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+button {
+    background: linear-gradient(135deg, #1877F2, #1257B2);
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 14px;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 8px;
+    transition: all 0.3s;
+}
+
+button:hover {
+    background: linear-gradient(135deg, #1257B2, #0D47A1);
+    transform: scale(1.05);
+}
+
+#fetchProduct {
+    margin-top: 20px;
+    background: #28a745;
+    transition: background 0.3s;
+}
+
+#fetchProduct:hover {
+    background: #218838;
+}
+
+input[type="file"] {
+    border: none;
+    background: none;
+}
+
+@media (max-width: 900px) {
+    body {
+        padding: 20px;
+    }
+    .container {
+        padding: 25px;
+    }
+}

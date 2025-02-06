@@ -4,15 +4,68 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Marketplace Auto-Fill</title>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; width: 200px; padding: 10px; }
-        button { background: #1877F2; color: white; border: none; padding: 10px; width: 100%; cursor: pointer; border-radius: 5px; }
-        button:hover { background: #1257B2; }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h3>Auto-Fill Marketplace</h3>
-    <button id="fetchProduct">Fetch Product & Open FB</button>
+    <h3>Marketplace Auto-Fill</h3>
+
+    <div class="container">
+        <form id="productForm">
+            <label for="title">Product Title:</label>
+            <input type="text" id="title" name="title" placeholder="Enter product title" required>
+        
+            <label for="price">Price:</label>
+            <input type="number" id="price" name="price" placeholder="Enter price" step="0.01" required>
+        
+            <label for="category">Category:</label>
+            <select id="category" name="category" required>
+                <option value="" disabled selected>Select Category</option>
+                <option value="Home">Home</option>
+                <option value="Furniture">Furniture</option>
+                <option value="Household">Household</option>
+                <option value="Garden">Garden</option>
+                <option value="Video Games">Video Games</option>
+                <option value="Books, films & music">Books, films & music</option>
+                <option value="Women's clothing & shoes">Women's clothing & shoes</option>
+                <option value="Men's clothing & shoes">Men's clothing & shoes</option>
+                <option value="Bags & luggage">Bags & luggage</option>
+                <option value="Jewellery and accessories">Jewellery and accessories</option>
+                <option value="Electronics & computers">Electronics & computers</option>
+                <option value="Mobile phones">Mobile phones</option>
+                <option value="Bicycles">Bicycles</option>
+                <option value="Arts & crafts">Arts & crafts</option>
+                <option value="Sport and outdoors">Sport and outdoors</option>
+                <option value="Miscellaneous">Miscellaneous</option>
+            </select>
+        
+            <label for="condition">Condition:</label>
+            <select id="condition" name="condition" required>
+                <option value="" disabled selected>Select Condition</option>
+                <option value="New">New</option>
+                <option value="Used – like new">Used – like new</option>
+                <option value="Used – good">Used – good</option>
+                <option value="Used – fair">Used – fair</option>
+            </select>
+        
+            <label for="description">Product Description:</label>
+            <textarea id="description" name="description" placeholder="Enter product description" required></textarea>
+        
+            <label for="images">Upload Images:</label>
+            <input type="file" id="images" name="images" accept="image/*" multiple required>
+        
+            <label for="status">Status:</label>
+            <select id="status" name="status" required>
+                <option value="active" selected>Active</option>
+                <option value="inactive">Inactive</option>
+                <option value="sold">Sold</option>
+            </select>
+        
+            <button type="submit">Upload Product</button>
+        </form>
+
+        <button id="fetchProduct">Fetch Product & Open FB</button>
+    </div>
+
     <script src="popup.js"></script>
 </body>
 </html>

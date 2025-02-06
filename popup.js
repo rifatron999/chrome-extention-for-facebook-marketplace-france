@@ -28,3 +28,27 @@ document.getElementById("fetchProduct").addEventListener("click", function () {
         })
         .catch(error => console.error("Fetch Error:", error));
 });
+//upload
+document.getElementById("productForm").addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    let formData = new FormData();
+    formData.append("title", document.getElementById("title").value);
+    formData.append("price", document.getElementById("price").value);
+    formData.append("description", document.getElementById("description").value);
+    formData.append("image", document.getElementById("image").files[0]);
+
+    try {
+        let response = await fetch("http://localhost/others/chrome-extention-for-facebook-marketplace-france/upload.php", {
+            method: "POST",
+            body: formData
+        });
+
+        let result = await response.json();
+        alert(result.message);
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Failed to upload product.");
+    }
+});
+//upload end 
