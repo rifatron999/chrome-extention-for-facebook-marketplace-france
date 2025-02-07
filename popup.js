@@ -36,42 +36,58 @@
 
 //list product 
     document.getElementById("listProduct").addEventListener("click", function () {
-        const buttonValue = this.value; // Get the value of the button
+        let selectedValues = Array.from(document.querySelectorAll(".selectedRow:checked"))
+            .map(checkbox => checkbox.value);
 
-        fetch("http://localhost/others/chrome-extention-for-facebook-marketplace-france/server.php", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ value: buttonValue })
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Network response was not ok: " + response.statusText);
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log("Fetched Data:", data);
+        if (selectedValues.length === 0) {
+            alert("⚠️ Please select at least one product.");
+            return;
+        }
 
-            // Open the Facebook Marketplace page
-            chrome.tabs.create({ url: "https://www.facebook.com/marketplace/create/item" }, function (tab) {
-                
-                // Store the product data first
-                chrome.storage.local.set({ productData: data }, function () {
-                    console.log("Product data saved in storage.");
+        console.log("✅ Selected Product IDs:", selectedValues); // Debugging log
+        
+        selectedValues.forEach(productId => {
+            alert(productId);
+            fetch("http://localhost/others/chrome-extention-for-facebook-marketplace-france/server.php", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ value: productId }) // Send one product at a time
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Network response was not ok: " + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("✅ Server Response for Product ID:", productId, data);
 
-                    // Inject content script only after data is stored
-                    chrome.scripting.executeScript({
-                        target: { tabId: tab.id },
-                        files: ["content.js"]
-                    }).catch(err => {
-                        console.error("Error injecting content script:", err);
+                if (data.error) {
+                    console.error("❌ Server Error:", data.error);
+                    return;
+                }
+
+                // Open a new Facebook Marketplace tab for each product
+                chrome.tabs.create({ url: "https://www.facebook.com/marketplace/create/item" }, function (tab) {
+                    
+                    // Store each product data
+                    chrome.storage.local.set({ productData: data }, function () {
+                        console.log("📦 Product data saved for:", productId);
+
+                        // Inject content script for each product
+                        chrome.scripting.executeScript({
+                            target: { tabId: tab.id },
+                            files: ["content.js"]
+                        }).catch(err => {
+                            console.error("❌ Error injecting content script:", err);
+                        });
                     });
                 });
-            });
-        })
-        .catch(error => console.error("Fetch Error:", error));
+            })
+            .catch(error => console.error("❌ Fetch Error for Product ID:", productId, error));
+        });
     });
 
 //list end
@@ -103,6 +119,9 @@
 
             let result = JSON.parse(text); // Parse JSON after checking
             alert(result.message);
+            // ✅ Refresh the whole extension after successful upload
+            //chrome.runtime.reload();
+            window.location.reload();
         } catch (error) {
             console.error("Error:", error);
             alert("Failed to upload product.");
