@@ -10,6 +10,7 @@
 
             products.forEach(product => {
                 let row = document.createElement("tr");
+                
                 row.innerHTML = 
                     `<td>
                         <input class="selectedRow" type="checkbox" value="${product.id}">
@@ -23,10 +24,19 @@
                     <td>${product.price}</td>
                     <td>${product.category}</td>
                     <td>${product.condition}</td>
-                    <td>${product.status}</td>`
-                    ;
+                    <td>${product.status}</td>`;
+                
+                // Add event listener to the row
+                row.addEventListener("click", function () {
+                    // Trigger the listProduct button's click event with the product ID
+                    let listProductButton = document.getElementById("listProduct");
+                    listProductButton.value = product.id;  // Set the value of the button to the product ID
+                    listProductButton.click();  // Trigger the button click event
+                });
+            
                 tableBody.appendChild(row);
             });
+            
 
         } catch (error) {
             console.error("Error fetching products:", error);
@@ -47,7 +57,6 @@
         console.log("✅ Selected Product IDs:", selectedValues); // Debugging log
         
         selectedValues.forEach(productId => {
-            alert(productId);
             fetch("http://localhost/others/chrome-extention-for-facebook-marketplace-france/server.php", {
                 method: 'POST',
                 headers: {

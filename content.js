@@ -201,5 +201,5 @@ chrome.storage.local.get("productData", function (result) {
         
         
 
-    }, 10000);  // Delay execution by 10 seconds (10000 ms)
+    }, 3000);  // Delay execution by 10 seconds (10000 ms)
 });
