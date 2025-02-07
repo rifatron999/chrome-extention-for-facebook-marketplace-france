@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $price = $_POST['price'] ?? '';
     $description = $_POST['description'] ?? '';
     $category = $_POST['category'] ?? '';
-    $condition = $_POST['condition'] ?? '';
+    $conditionf = $_POST['conditionf'] ?? '';
     $status = $_POST['status'] ?? '';
 
     if (empty($title) || empty($price) || empty($description)) {
@@ -48,8 +48,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Insert Data
-    $stmt = $conn->prepare("INSERT INTO products (title, price, description, category, `condition`, status, images) VALUES (?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("sssssss", $title, $price, $description, $category, $condition, $status, $imageJson);
+    $stmt = $conn->prepare("INSERT INTO products (title, price, description, category, conditionf, status, images) VALUES (?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssssss", $title, $price, $description, $category, $conditionf, $status, $imageJson);
 
     if ($stmt->execute()) {
         echo json_encode(["message" => "Product uploaded successfully"]);

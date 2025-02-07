@@ -23,7 +23,7 @@
                     <td>${product.title}</td>
                     <td>${product.price}</td>
                     <td>${product.category}</td>
-                    <td>${product.condition}</td>
+                    <td>${product.conditionf}</td>
                     <td>${product.status}</td>`;
                 
                 // Add event listener to the row
@@ -109,7 +109,7 @@
         formData.append("price", document.getElementById("price").value);
         formData.append("description", document.getElementById("description").value);
         formData.append("category", document.getElementById("category").value);
-        formData.append("condition", document.getElementById("condition").value);
+        formData.append("conditionf", document.getElementById("conditionf").value);
         formData.append("status", document.getElementById("status").value);
 
         let imageFiles = document.getElementById("images").files;

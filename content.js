@@ -134,7 +134,7 @@ chrome.storage.local.get("productData", function (result) {
             
                 setTimeout(() => {
                     let newOption = [...document.querySelectorAll('span')]
-                        .find(span => span.textContent.trim() === "Mobile phones");
+                        .find(span => span.textContent.trim() === product.category);
             
                     if (newOption) {
                         newOption.click();
@@ -146,23 +146,24 @@ chrome.storage.local.get("productData", function (result) {
             });
         //category end
 
-        //condition
+        //conditionf
             waitForElement('label[aria-label="Condition"]', (dropdown) => {
                 dropdown.click(); // Click to open the dropdown
             
                 setTimeout(() => {
+
                     let newOption = [...document.querySelectorAll('span')]
-                        .find(span => span.textContent.trim() === "New");
+                        .find(span => span.textContent.trim() === product.conditionf);
             
                     if (newOption) {
                         newOption.click();
-                        console.log("✅ Condition set");
+                        console.log("✅ conditionf set");
                     } else {
-                        console.error("❌ 'Condition' option not found");
+                        console.error("❌ 'conditionf' option not found");
                     }
                 }, 1000); // Delay to allow dropdown options to load
             });
-        //condition end
+        //conditionf end
         
         //description
             waitForElement('label[aria-label="Description"]', (labelElement) => {

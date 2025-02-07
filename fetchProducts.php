@@ -11,7 +11,7 @@ if ($conn->connect_error) {
     exit;
 }
 
-$sql = "SELECT id, title, price, category, `condition`, status, images 
+$sql = "SELECT id, title, price, category, conditionf, status, images 
         FROM products 
         WHERE is_published = 0 
         ORDER BY id DESC";
