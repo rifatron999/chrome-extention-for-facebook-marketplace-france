@@ -4,6 +4,7 @@
     "version": "1.0",
     "description": "Automatically fills product details on Facebook Marketplace.",
     "permissions": [
+        "tabs",
         "storage",
         "activeTab",
         "scripting"

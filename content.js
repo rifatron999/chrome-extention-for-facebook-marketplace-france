@@ -1,205 +1,121 @@
-chrome.storage.local.get("productData", function (result) {
-    if (!result || !result.productData) {
-        console.error("❌ Error: No product data found in storage.");
+chrome.runtime.sendMessage({ action: "getActiveTabId" }, function (response) {
+    if (chrome.runtime.lastError) {
+        console.error("❌ Chrome Runtime Error:", chrome.runtime.lastError.message);
         return;
     }
 
-    let product = result.productData;
-    console.log("✅ Product Data Retrieved:", product);
+    if (!response || !response.tabId) {
+        console.error("❌ Error: Could not retrieve active Tab ID.");
+        return;
+    }
 
-    // Wait for 10 seconds before executing the script
-    setTimeout(() => {
-        function waitForElement(selector, callback, interval = 1000, maxAttempts = 10) {
-            let attempts = 0;
-            const check = setInterval(() => {
-                let element = document.querySelector(selector);
-                if (element) {
-                    clearInterval(check);
-                    callback(element);
-                } else {
-                    console.log(`🔄 Waiting for form fields... (${++attempts}/${maxAttempts})`);
-                    if (attempts >= maxAttempts) {
-                        clearInterval(check);
-                        console.error("❌ Error: Form fields not found.");
-                    }
-                }
-            }, interval);
+    let tabId = response.tabId;
+    console.log(`✅ Retrieved Tab ID: ${tabId}`);
+
+    let storageKey = "productData_" + tabId;
+    
+    chrome.storage.local.get(storageKey, function (result) {
+        if (chrome.runtime.lastError) {
+            console.error("❌ Chrome Storage Error:", chrome.runtime.lastError);
+            return;
         }
-        //images
-        
+
+        if (!result || !result[storageKey]) {
+            console.error(`❌ No product data found for Tab ID ${tabId}.`);
+            return;
+        }
+
+        let product = result[storageKey];
+        console.log(`✅ Product Data Retrieved for Tab ID ${tabId}:`, product);
+
+        //from filling logic
+        setTimeout(() => {
+            function waitForElement(selector, callback, interval = 1000, maxAttempts = 10) {
+                let attempts = 0;
+                const check = setInterval(() => {
+                    let element = document.querySelector(selector);
+                    if (element) {
+                        clearInterval(check);
+                        callback(element);
+                    } else {
+                        console.log(`🔄 Waiting for form fields... (${++attempts}/${maxAttempts})`);
+                        if (attempts >= maxAttempts) {
+                            clearInterval(check);
+                            console.error("❌ Error: Form fields not found.");
+                        }
+                    }
+                }, interval);
+            }
+
             // 📌 Drag & Drop Images into Facebook Upload Box
             function dropImages(imageUrls) {
                 waitForElement('input[type="file"][accept*="image"]', async (fileInput) => {
                     console.log("✅ Found Image Upload Input!");
 
-                    // Creating a DataTransfer object for drag-and-drop
                     let dataTransfer = new DataTransfer();
-
-                    // Loop through image URLs and convert them to File objects
                     for (let imageUrl of imageUrls) {
                         let response = await fetch(imageUrl);
                         let blob = await response.blob();
                         let file = new File([blob], "product-image.jpg", { type: blob.type });
-
                         dataTransfer.items.add(file);
                     }
 
-                    // Assign images to the file input
                     fileInput.files = dataTransfer.files;
-
-                    // Dispatch change event to trigger upload
                     fileInput.dispatchEvent(new Event("change", { bubbles: true }));
-
                     console.log("✅ Images dropped successfully!");
                 });
             }
 
-            // 📌 Call the function with images from storage
             if (product.images && product.images.length > 0) {
                 dropImages(product.images);
             } else {
                 console.log("❌ No images found in product data.");
             }
-        
-        //images end
 
-        //title
-            waitForElement('label[aria-label="Title"]', (labelElement) => {
-                // Extract the value of the 'for' attribute
-                const inputId = labelElement.getAttribute('for');
-                
-                // Escape the colon in the inputId to make it a valid selector
-                const escapedInputId = inputId.replace(/:/g, '\\:');
-                
-                // Find the input field using the escaped ID
-                const inputField = document.querySelector(`#${escapedInputId}`);
-                
-                if (inputField) {
-                    inputField.focus();  // Focus on the input field
-                    
-                    // Use setTimeout to ensure value is set after focus
-                    setTimeout(() => {
-                        inputField.value = product.title;  // Set the value of the input field
-                        
-                        // Trigger input event to notify the browser that the value has changed
-                        const event = new Event('input', {
-                            bubbles: true,
-                            cancelable: true,
-                        });
-                        inputField.dispatchEvent(event);
-                        
-                        console.log("✅ Title focused and filled successfully!");
-                    }, 100);  // Wait for 100ms to ensure focus happens before setting value
-                } else {
-                    console.log("❌ Input field not found");
-                }
-            });
-        //title end 
-        //price
-            waitForElement('label[aria-label="Price"]', (labelElement) => {
-                // Extract the value of the 'for' attribute
-                const inputId = labelElement.getAttribute('for');
-                
-                // Escape the colon in the inputId to make it a valid selector
-                const escapedInputId = inputId.replace(/:/g, '\\:');
-                
-                // Find the input field using the escaped ID
-                const inputField = document.querySelector(`#${escapedInputId}`);
-                
-                if (inputField) {
-                    inputField.focus();  // Focus on the input field
-                    
-                    // Use setTimeout to ensure value is set after focus
-                    setTimeout(() => {
-                        inputField.value = product.price;  // Set the value of the input field
-                        
-                        // Trigger input event to notify the browser that the value has changed
-                        const event = new Event('input', {
-                            bubbles: true,
-                            cancelable: true,
-                        });
-                        inputField.dispatchEvent(event);
-                        
-                        console.log("✅ Price focused and filled successfully!");
-                    }, 100);  // Wait for 100ms to ensure focus happens before setting value
-                } else {
-                    console.log("❌ Input field not found");
-                }
-            });
-        //price end 
-
-        //category
-            waitForElement('label[aria-label="Category"]', (dropdown) => {
-                dropdown.click(); // Click to open the dropdown
-            
-                setTimeout(() => {
-                    let newOption = [...document.querySelectorAll('span')]
-                        .find(span => span.textContent.trim() === "Mobile phones");
-            
-                    if (newOption) {
-                        newOption.click();
-                        console.log("✅ Category set");
+            // Fill form fields (Title, Price, Description, etc.)
+            function fillInputField(label, value) {
+                waitForElement(`label[aria-label="${label}"]`, (labelElement) => {
+                    const inputId = labelElement.getAttribute('for');
+                    const escapedInputId = inputId.replace(/:/g, '\\:');
+                    const inputField = document.querySelector(`#${escapedInputId}`);
+                    if (inputField) {
+                        inputField.focus();
+                        setTimeout(() => {
+                            inputField.value = value;
+                            inputField.dispatchEvent(new Event('input', { bubbles: true, cancelable: true }));
+                            console.log(`✅ ${label} set successfully!`);
+                        }, 100);
                     } else {
-                        console.error("❌ 'Category' option not found");
+                        console.log(`❌ ${label} input field not found`);
                     }
-                }, 1000); // Delay to allow dropdown options to load
-            });
-        //category end
+                });
+            }
 
-        //condition
-            waitForElement('label[aria-label="Condition"]', (dropdown) => {
-                dropdown.click(); // Click to open the dropdown
-            
-                setTimeout(() => {
-                    let newOption = [...document.querySelectorAll('span')]
-                        .find(span => span.textContent.trim() === "New");
-            
-                    if (newOption) {
-                        newOption.click();
-                        console.log("✅ Condition set");
-                    } else {
-                        console.error("❌ 'Condition' option not found");
-                    }
-                }, 1000); // Delay to allow dropdown options to load
-            });
-        //condition end
-        
-        //description
-            waitForElement('label[aria-label="Description"]', (labelElement) => {
-                // Extract the value of the 'for' attribute
-                const inputId = labelElement.getAttribute('for');
-                
-                // Escape the colon in the inputId to make it a valid selector
-                const escapedInputId = inputId.replace(/:/g, '\\:');
-                
-                // Find the input field using the escaped ID
-                const inputField = document.querySelector(`#${escapedInputId}`);
-                
-                if (inputField) {
-                    inputField.focus();  // Focus on the input field
-                    
-                    // Use setTimeout to ensure value is set after focus
+            fillInputField("Title", product.title);
+            fillInputField("Price", product.price);
+            fillInputField("Description", product.description);
+
+            // Set dropdown values (Category, Condition)
+            function selectDropdown(label, optionText) {
+                waitForElement(`label[aria-label="${label}"]`, (dropdown) => {
+                    dropdown.click();
                     setTimeout(() => {
-                        inputField.value = product.description;  // Set the value of the input field
-                        
-                        // Trigger input event to notify the browser that the value has changed
-                        const event = new Event('input', {
-                            bubbles: true,
-                            cancelable: true,
-                        });
-                        inputField.dispatchEvent(event);
-                        
-                        console.log("✅ Description focused and filled successfully!");
-                    }, 100);  // Wait for 100ms to ensure focus happens before setting value
-                } else {
-                    console.log("❌ Input field not found");
-                }
-            });
-        //description end
-        
-         
-        
-        
+                        let newOption = [...document.querySelectorAll('span')]
+                            .find(span => span.textContent.trim() === optionText);
+                        if (newOption) {
+                            newOption.click();
+                            console.log(`✅ ${label} set to ${optionText}`);
+                        } else {
+                            console.error(`❌ '${label}' option not found`);
+                        }
+                    }, 1000);
+                });
+            }
 
-    }, 10000);  // Delay execution by 10 seconds (10000 ms)
+            selectDropdown("Category", "Mobile phones");
+            selectDropdown("Condition", "New");
+
+        }, 5000);
+        //from filling logic end 
+    });
 });
