@@ -1,50 +1,56 @@
 <?php
 header("Content-Type: application/json");
 header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 
-// Define the images directory
-$imageDir = "images";
+// Get the JSON request body
+$data = json_decode(file_get_contents("php://input"), true);
+$productID = $data['value'] ?? null;
 
-// Function to get base64-encoded images from a folder
-function getImages($directory) {
-    $images = [];
+if (!$productID) {
+    echo json_encode(["error" => "Invalid product ID"]);
+    exit;
+}
+
+// Database connection
+$conn = new mysqli("localhost", "root", "", "chrome_extension");
+
+if ($conn->connect_error) {
+    echo json_encode(["error" => "Database connection failed"]);
+    exit;
+}
+
+// Fetch product details
+$sql = "SELECT title, price, category, description, images FROM products WHERE id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $productID);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows > 0) {
+    $product = $result->fetch_assoc();
     
-    // Check if directory exists
-    if (is_dir($directory)) {
-        $files = scandir($directory); // Get all files in the folder
+    // Decode JSON image paths
+    $image_paths = json_decode($product['images'], true);
+    $product['images'] = [];
 
-        foreach ($files as $file) {
-            if ($file !== "." && $file !== "..") { // Ignore special directories
-                $filePath = $directory . "/" . $file;
-
-                // Ensure it's a valid image file
-                if (is_file($filePath) && getimagesize($filePath)) {
-                    // Read the file contents and encode as base64
-                    $imageData = base64_encode(file_get_contents($filePath));
-                    $mimeType = mime_content_type($filePath);
-
-                    // Append to images array
-                    $images[] = "data:$mimeType;base64,$imageData";
-                }
+    if (is_array($image_paths)) {
+        foreach ($image_paths as $path) {
+            if (file_exists($path)) {
+                $imageData = base64_encode(file_get_contents($path));
+                $product['images'][] = "data:image/jpeg;base64," . $imageData;
+            } else {
+                $product['images'][] = null; // Handle missing image case
             }
         }
     }
-    
-    return $images;
+
+    echo json_encode($product);
+} else {
+    echo json_encode(["message" => "Product not found"]);
 }
 
-// Fetch images from the 'images' folder
-$images = getImages($imageDir);
-
-$products = [
-    "title" => "iPhone 12",
-    "price" => "450",
-    "category" => "Electronics",
-    "description" => "Good condition, available for pickup.",
-    "images" => $images // Now contains base64-encoded images
-];
-
-echo json_encode($products);
+$stmt->close();
+$conn->close();
 ?>
