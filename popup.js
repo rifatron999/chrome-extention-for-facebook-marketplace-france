@@ -31,44 +31,55 @@
 //fetch end
 
 //list product 
-document.getElementById("listProduct").addEventListener("click", function () {
-    const buttonValue = this.value; // Get the value of the button
+    // Wait for the DOM to be fully loaded
+    document.addEventListener("DOMContentLoaded", function () {
+        // Get all buttons with the class 'listProduct'
+        const listProductButtons = document.querySelectorAll(".listProduct");
 
-    fetch("http://localhost/others/chrome-extention-for-facebook-marketplace-france/server.php", {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ value: buttonValue })
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error("Network response was not ok: " + response.statusText);
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log("Fetched Data:", data);
+        // Loop through each button and add an event listener
+        listProductButtons.forEach(button => {
+            button.addEventListener("click", function () {
+                const buttonValue = this.value; // Get the value of the clicked button
 
-        // Open the Facebook Marketplace page
-        chrome.tabs.create({ url: "https://www.facebook.com/marketplace/create/item" }, function (tab) {
-            
-            // Store the product data first
-            chrome.storage.local.set({ productData: data }, function () {
-                console.log("Product data saved in storage.");
+                // Send a POST request with the button's value
+                fetch("http://localhost/others/chrome-extention-for-facebook-marketplace-france/server.php", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ value: buttonValue })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Network response was not ok: " + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Fetched Data:", data);
 
-                // Inject content script only after data is stored
-                chrome.scripting.executeScript({
-                    target: { tabId: tab.id },
-                    files: ["content.js"]
-                }).catch(err => {
-                    console.error("Error injecting content script:", err);
-                });
+                    // Open the Facebook Marketplace page
+                    chrome.tabs.create({ url: "https://www.facebook.com/marketplace/create/item" }, function (tab) {
+                        
+                        // Store the product data first
+                        chrome.storage.local.set({ productData: data }, function () {
+                            console.log("Product data saved in storage.");
+
+                            // Inject content script only after data is stored
+                            chrome.scripting.executeScript({
+                                target: { tabId: tab.id },
+                                files: ["content.js"]
+                            }).catch(err => {
+                                console.error("Error injecting content script:", err);
+                            });
+                        });
+                    });
+                })
+                .catch(error => console.error("Fetch Error:", error));
             });
         });
-    })
-    .catch(error => console.error("Fetch Error:", error));
-});
+    });
+
 //list end
 //upload
     document.getElementById("productForm").addEventListener("submit", async function (event) {
