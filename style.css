@@ -73,8 +73,8 @@ h4 {
     padding: 30px;
     border-radius: 10px;
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-    min-width: 34rem; /* Minimum width of the popup */
-    max-width: 34rem; /* Maximum width of the popup */
+    min-width: 40rem; /* Minimum width of the popup */
+    max-width: 40rem; /* Maximum width of the popup */
     height: auto;
     overflow-y: auto; /* Allows scroll if content overflows */
 }

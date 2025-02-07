@@ -11,16 +11,20 @@
             products.forEach(product => {
                 let row = document.createElement("tr");
                 row.innerHTML = 
-                    `<td>${product.title}</td>
-                    <td>${product.price}</td>
-                    <td>${product.category}</td>
-                    <td>${product.condition}</td>
-                    <td>${product.status}</td>
+                    `<td>
+                        <input class="selectedRow" type="checkbox" value="${product.id}">
+                    </td>
                     <td>
                         ${product.images && product.images.length > 0 ? 
                             `<img src="http://localhost/others/chrome-extention-for-facebook-marketplace-france/${product.images[0]}" width="50">` : 
                             "No Image"}
-                    </td>`;
+                    </td>
+                    <td>${product.title}</td>
+                    <td>${product.price}</td>
+                    <td>${product.category}</td>
+                    <td>${product.condition}</td>
+                    <td>${product.status}</td>`
+                    ;
                 tableBody.appendChild(row);
             });
 
@@ -31,53 +35,43 @@
 //fetch end
 
 //list product 
-    // Wait for the DOM to be fully loaded
-    document.addEventListener("DOMContentLoaded", function () {
-        // Get all buttons with the class 'listProduct'
-        const listProductButtons = document.querySelectorAll(".listProduct");
+    document.getElementById("listProduct").addEventListener("click", function () {
+        const buttonValue = this.value; // Get the value of the button
 
-        // Loop through each button and add an event listener
-        listProductButtons.forEach(button => {
-            button.addEventListener("click", function () {
-                const buttonValue = this.value; // Get the value of the clicked button
+        fetch("http://localhost/others/chrome-extention-for-facebook-marketplace-france/server.php", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ value: buttonValue })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Network response was not ok: " + response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log("Fetched Data:", data);
 
-                // Send a POST request with the button's value
-                fetch("http://localhost/others/chrome-extention-for-facebook-marketplace-france/server.php", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ value: buttonValue })
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error("Network response was not ok: " + response.statusText);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log("Fetched Data:", data);
+            // Open the Facebook Marketplace page
+            chrome.tabs.create({ url: "https://www.facebook.com/marketplace/create/item" }, function (tab) {
+                
+                // Store the product data first
+                chrome.storage.local.set({ productData: data }, function () {
+                    console.log("Product data saved in storage.");
 
-                    // Open the Facebook Marketplace page
-                    chrome.tabs.create({ url: "https://www.facebook.com/marketplace/create/item" }, function (tab) {
-                        
-                        // Store the product data first
-                        chrome.storage.local.set({ productData: data }, function () {
-                            console.log("Product data saved in storage.");
-
-                            // Inject content script only after data is stored
-                            chrome.scripting.executeScript({
-                                target: { tabId: tab.id },
-                                files: ["content.js"]
-                            }).catch(err => {
-                                console.error("Error injecting content script:", err);
-                            });
-                        });
+                    // Inject content script only after data is stored
+                    chrome.scripting.executeScript({
+                        target: { tabId: tab.id },
+                        files: ["content.js"]
+                    }).catch(err => {
+                        console.error("Error injecting content script:", err);
                     });
-                })
-                .catch(error => console.error("Fetch Error:", error));
+                });
             });
-        });
+        })
+        .catch(error => console.error("Fetch Error:", error));
     });
 
 //list end
