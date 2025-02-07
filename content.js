@@ -198,7 +198,32 @@ chrome.storage.local.get("productData", function (result) {
             });
         //description end
         
-         
+        //next
+        setTimeout(() => {
+            // Wait for the "Next" button and click it
+            waitForElement('div[aria-label="Next"]', (nextButton) => {
+                console.log("✅ 'Next' button found!");
+                
+                // Simulate a click on the "Next" button
+                nextButton.click();
+
+                console.log("🚀 Clicked 'Next' button!");
+            }, 1000, 15);  // Retry every 1 second for up to 15 attempts
+        }, 5000);
+        //next #
+        //publish
+        setTimeout(() => {
+            // Wait for the "Next" button and click it
+            waitForElement('div[aria-label="Publish"]', (publishButton) => {
+                console.log("✅ 'Publish' button found!");
+                
+                // Simulate a click on the "Next" button
+                publishButton.click();
+
+                console.log("🚀 Clicked 'Publish' button!");
+            }, 1000, 15);  // Retry every 1 second for up to 15 attempts
+        }, 6000);
+        //publish #
         
         
 
