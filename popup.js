@@ -45,9 +45,8 @@
         }
 
         console.log("✅ Selected Product IDs:", selectedValues); // Debugging log
-        
+
         selectedValues.forEach(productId => {
-            alert(productId);
             fetch("http://localhost/others/chrome-extention-for-facebook-marketplace-france/server.php", {
                 method: 'POST',
                 headers: {
@@ -72,9 +71,13 @@
                 // Open a new Facebook Marketplace tab for each product
                 chrome.tabs.create({ url: "https://www.facebook.com/marketplace/create/item" }, function (tab) {
                     
-                    // Store each product data
-                    chrome.storage.local.set({ productData: data }, function () {
-                        console.log("📦 Product data saved for:", productId);
+                    // Store the product data with a unique key per tab
+                    let storageKey = `productData_${tab.id}`;
+                    let productObject = {};
+                    productObject[storageKey] = data;
+
+                    chrome.storage.local.set(productObject, function () {
+                        console.log(`📦 Product data saved for ${productId} with key ${storageKey}`);
 
                         // Inject content script for each product
                         chrome.scripting.executeScript({
@@ -89,6 +92,7 @@
             .catch(error => console.error("❌ Fetch Error for Product ID:", productId, error));
         });
     });
+
 
 //list end
 //upload
