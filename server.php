@@ -22,7 +22,7 @@ if ($conn->connect_error) {
 }
 
 // Fetch product details
-$sql = "SELECT title, price, category,conditionf, description, images FROM products WHERE id = ?";
+$sql = "SELECT id,title, price, category,conditionf, description, images FROM products WHERE id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $productID);
 $stmt->execute();

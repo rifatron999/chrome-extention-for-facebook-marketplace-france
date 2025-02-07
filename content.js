@@ -222,8 +222,21 @@ chrome.storage.local.get("productData", function (result) {
 
                 console.log("🚀 Clicked 'Publish' button!");
             }, 1000, 15);  // Retry every 1 second for up to 15 attempts
+            //update
+            fetch("http://localhost/update.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ id: product.id })  // Replace 123 with the actual product ID
+            })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error("Error:", error));
+            //update end 
         }, 6000);
         //publish #
+        //
         
         
 
