@@ -228,11 +228,11 @@ chrome.storage.local.get("productData", function (result) {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ id: product.id })  // Replace 123 with the actual product ID
+                body: JSON.stringify({ id: product.id }) // Replace 123 with the actual product ID
             })
             .then(response => response.json())
-            .then(data => console.log(data))
-            .catch(error => console.error("Error:", error));
+            .then(data => console.log("✅ Success:", data))
+            .catch(error => console.error("❌ Error:", error));            
             //update end 
         }, 6000);
         //publish #
