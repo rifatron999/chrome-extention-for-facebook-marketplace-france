@@ -9,7 +9,7 @@ chrome.storage.local.get("productData", function (result) {
 
     // Wait for 10 seconds before executing the script
     setTimeout(() => {
-        function waitForElement(selector, callback, interval = 1000, maxAttempts = 10) {
+        function waitForElement(selector, callback, interval = 2000, maxAttempts = 20) {
             let attempts = 0;
             const check = setInterval(() => {
                 let element = document.querySelector(selector);
@@ -208,7 +208,7 @@ chrome.storage.local.get("productData", function (result) {
                 nextButton.click();
 
                 console.log("🚀 Clicked 'Next' button!");
-            }, 1000, 15);  // Retry every 1 second for up to 15 attempts
+            }, 10000, 15);  // Retry every 1 second for up to 15 attempts
         }, 5000);
         //next #
         //publish
@@ -221,8 +221,8 @@ chrome.storage.local.get("productData", function (result) {
                 publishButton.click();
 
                 console.log("🚀 Clicked 'Publish' button!");
-            }, 1000, 15);  // Retry every 1 second for up to 15 attempts
-        }, 6000);
+            }, 10000, 15);  // Retry every 1 second for up to 15 attempts
+        }, 10000);
         //publish #
         //update
         fetch("http://localhost/others/chrome-extention-for-facebook-marketplace-france/update.php", {
