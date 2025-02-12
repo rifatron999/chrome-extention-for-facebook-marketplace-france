@@ -78,8 +78,32 @@
                     return;
                 }
 
+                //issue soln
+                const hostnames = [
+                    "web.facebook.com",
+                    "www.facebook.com",
+                    "m.facebook.com",
+                    "mbasic.facebook.com",
+                    "touch.facebook.com",
+                    "business.facebook.com",
+                    "work.facebook.com"
+                ];
+
+                let currentDomain = "web.facebook.com";
+                for (let i = 0; i < hostnames.length; i++) {
+                    if (location.hostname.includes(hostnames[i])) {
+                        currentDomain = hostnames[i];
+                        break;
+                    }
+                }
+
+                const marketplaceUrl = `https://${currentDomain}/marketplace/create/item`;
+                console.log("Current url : ",currentDomain);
+                
+                //issue soln 
+
                 // Open a new Facebook Marketplace tab for each product
-                chrome.tabs.create({ url: "https://web.facebook.com/marketplace/create/item" }, function (tab) {
+                chrome.tabs.create({ url: marketplaceUrl }, function (tab) {
                     
                     // Store each product data
                     chrome.storage.local.set({ productData: data }, function () {
