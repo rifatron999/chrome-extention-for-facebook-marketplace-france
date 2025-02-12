@@ -79,7 +79,7 @@
                 }
 
                 // Open a new Facebook Marketplace tab for each product
-                chrome.tabs.create({ url: "https://www.facebook.com/marketplace/create/item" }, function (tab) {
+                chrome.tabs.create({ url: "https://web.facebook.com/marketplace/create/item" }, function (tab) {
                     
                     // Store each product data
                     chrome.storage.local.set({ productData: data }, function () {

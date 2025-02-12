@@ -9,7 +9,7 @@
         "scripting"
     ],
     "host_permissions": [
-        "https://www.facebook.com/marketplace/*"
+        "https://web.facebook.com/marketplace/*"
     ],
     "background": {
         "service_worker": "background.js"
@@ -20,7 +20,7 @@
     },
     "content_scripts": [
         {
-            "matches": ["https://www.facebook.com/marketplace/*"],
+            "matches": ["https://web.facebook.com/marketplace/*"],
             "js": ["content.js"]
         }
     ]
